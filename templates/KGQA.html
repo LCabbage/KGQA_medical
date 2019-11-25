@@ -1,0 +1,466 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于知识图谱的医疗知识问答系统</title>
+    <style>
+        .instruction {
+            text-align: center;
+            background-color: #EBEBEB;
+        }
+
+        .input-group {
+            margin: 0 auto
+        }
+
+        .size1,.size2{
+            font-size: 16px;
+            font-weight: bold;
+            {#color: black;#}
+        }
+        {# {#}
+        {#    font-size: 14px;#}
+        {#    font-weight: bold;#}
+            {#color: black;#}
+        {#}#}
+        .size3 {
+            font-size: 14px;
+            {#color: black;#}
+        }
+
+        {##answer {#}
+        {#    font-family: arial;#}
+        {#    color: black;#}
+        {#    font-size: 30px;#}
+        {
+        #}#}
+        {##}
+        {#.qa {#}
+        {##}
+        {
+        #}#}
+
+    </style>
+
+    <!--Bootstrap Stylesheet [ REQUIRED ]-->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="../static/images/lo.jpg">
+    <!--Nifty Stylesheet [ REQUIRED ]-->
+    <link href="../static/css/nifty.min.css" rel="stylesheet">
+
+
+    <!--Nifty Premium Icon [ DEMONSTRATION ]-->
+    <link href="../static/css/nifty-demo-icons.min.css" rel="stylesheet">
+
+
+    <!--Demo [ DEMONSTRATION ]-->
+    <link href="../static/css/nifty-demo-icons.min.css" rel="stylesheet">
+    <link href="../static/css/nifty-demo.min.css" rel="stylesheet">
+    <link href="../static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../static/css/wiki.css" rel="stylesheet">
+
+
+    <!--JAVASCRIPT-->
+    <!--=================================================-->
+
+    <!--Pace - Page Load Progress Par [OPTIONAL]-->
+    <link href="../static/css/pace.min.css" rel="stylesheet">
+
+    <script src="../static/js/pace.min.js"></script>
+
+
+    <!--jQuery [ REQUIRED ]-->
+    <script src="../static/js/jquery-2.2.4.min.js"></script>
+
+
+    <!--BootstrapJS [ RECOMMENDED ]-->
+    <script src="../static/js/bootstrap.min.js"></script>
+
+
+    <!--NiftyJS [ RECOMMENDED ]-->
+    <script src="../static/js/nifty.min.js"></script>
+    <script src="../static/js/icons.js"></script>
+    <script src="../static/js/echarts.min.js"></script>
+
+
+    <!--=================================================-->
+
+    <!--Demo script [ DEMONSTRATION ]-->
+    <script src="../static/js/nifty-demo.min.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="container" class="effect aside-float aside-bright mainnav-lg">
+
+    <!--NAVBAR-->
+    <!--===================================================-->
+    <header id="navbar">
+        <div id="navbar-container" class="boxed">
+
+            <!--Brand logo & name-->
+            <!--================================-->
+            <div class="navbar-header">
+                <a href="{{ url_for('index') }}" class="navbar-brand">
+                    <img src="../static/images/lo.jpg" alt="Nifty Logo" class="brand-icon">
+                </a>
+            </div>
+            <!--================================-->
+            <!--End brand logo & name-->
+
+
+            <!--Navbar Dropdown-->
+            <!--================================-->
+            <div class="navbar-content clearfix">
+                <ul class="nav navbar-top-links pull-left">
+
+                    <!--Navigation toogle button-->
+                    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+                    <li class="tgl-menu-btn">
+                        <a class="mainnav-toggle" href="#">
+                            <i class="demo-pli-view-list"></i>
+                        </a>
+                    </li>
+
+                </ul>
+                <ul class="nav navbar-top-links pull-left">
+                    <h4>基于知识图谱的医疗知识问答系统</h4>
+
+
+                </ul>
+            </div>
+            <!--================================-->
+            <!--End Navbar Dropdown-->
+
+        </div>
+    </header>
+    <!--===================================================-->
+    <!--END NAVBAR-->
+
+    <div class="boxed">
+
+        <!--CONTENT CONTAINER-->
+        <!--===================================================-->
+        <div id="content-container">
+
+            <!--Page content-->
+            <!--===================================================-->
+            <div id="page-content" style="width: 100%">
+
+                <h4 class="text-main pad-btm bord-btm">问答系统</h4>
+                <div class="instruction">
+                    <p class="size1"> Hello，我是Q&A，是一个医疗领域的自动问答系统。</p>
+                    <p class="size2">目前只支持疾病症状、治疗方法、治疗周期、检查项目、科室等功能，并且只支持如下形式的提问：</p>
+                    <p class="size3"> 某疾病有什么症状/症候/表现/行为？ （糖尿病有什么症状？）</p>
+                    <p class="size3"> 某疾病的治疗方法/某疾病吃什么药？/某疾病怎么办？ （高血压吃什么药？）</p>
+                    <p class="size3"> 某疾病需要多久康复？某疾病多久能好？ （腮腺炎多久能好？）</p>
+                    <p class="size3"> 某症状的能治好吗/治好的几率是多大？ （糖尿病治好的概率？）</p>
+                    <p class="size3"> 某疾病需要做什么检查/化验？/某疾病的检测项目有哪些？ （高血压需要做什么检查？）</p>
+
+                </div>
+
+                <div class="qa">
+                    <div class="col-lg-6">
+                        <div class="input-group" style="left: 50%; right: 50%;">
+                            <input type="text" id="search" class="form-control input-lg" style="height: 50%;"
+                                   placeholder="请输入你的问题(eg.糖尿病有哪些症状？)">
+                            <span class="input-group-addon btn btn-primary" onclick="search()">搜索</span>
+                        </div>
+
+                        <div class="row" style="height: 15px;"></div>
+
+                        <!--网页显示数据库查询组装的结果-->
+                        <div class="input-group" style="left: 50%">
+                            <textarea id="answer" rows="4" cols="90" style="border-style:none"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row" style="height: 40px;"></div>
+
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 容器 -->
+                <div class="row">
+                    <div class="col-lg-6" style="height: 500px; width:100%;" id="guanxi">
+
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+        <!--===================================================-->
+        <!--End page content-->
+
+    </div>
+    <!--===================================================-->
+    <!--END CONTENT CONTAINER-->
+
+
+    <!--MAIN NAVIGATION-->
+    <!--===================================================-->
+    <nav id="mainnav-container">
+        <div id="mainnav">
+
+            <!--Menu-->
+            <!--================================-->
+            <div id="mainnav-menu-wrap">
+                <div class="nano">
+                    <div class="nano-content">
+
+                        <ul id="mainnav-menu" class="list-group">
+
+
+                            <!--Category name-->
+                            <li class="list-header"> 疾病关系可视化</li>
+
+                            <!--Menu list item-->
+
+
+                            <!--Menu list item-->
+                            <li>
+                                <a href="{{ url_for('search') }}">
+                                    <i class="fa fa-search" style="width:24px"></i>
+                                    <span class="menu-title">
+                                                <strong>检索疾病或症状</strong>
+                                            </span>
+
+                                </a>
+
+
+                            </li>
+
+                            <!--Menu list item-->
+
+
+                            <li class="list-divider"></li>
+
+                            <!--Category name-->
+                            <li class="list-header">问答系统</li>
+
+                            <!--Menu list item-->
+                            <li>
+                                <a href="{{ url_for('KGQA') }}">
+                                    <i class="fa fa-question-circle" style="width:24px"></i>
+                                    <span class="menu-title">医疗知识问答</span>
+
+                                </a>
+
+
+                            </li>
+
+                        </ul>
+
+
+                    </div>
+                </div>
+            </div>
+            <!--================================-->
+            <!--End menu-->
+
+        </div>
+    </nav>
+    <!--===================================================-->
+    <!--END MAIN NAVIGATION-->
+
+</div>
+
+{#<!-- FOOTER -->#}
+{#<!--===================================================-->#}
+{#<footer id="footer">#}
+{#</footer>#}
+{#<!--===================================================-->#}
+{#<!-- END FOOTER -->#}
+
+<!-- SCROLL PAGE BUTTON -->
+<!--===================================================-->
+<button class="scroll-top btn">
+    <i class="pci-chevron chevron-up"></i>
+</button>
+<!--===================================================-->
+</div>
+<!--===================================================-->
+<!-- END OF CONTAINER -->
+
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        // 回车键事件
+        if (e.which == 13) {
+            search();
+            //search_graph();
+
+        }
+    });
+    window.onresize = function () {
+        myChart.resize();
+    }
+
+    $.ajaxSetup({async: false});
+
+    // 基于准备好的容器(这里的容器是id为guanxi的div)，初始化echarts实例
+    var myChart = echarts.init(document.getElementById("guanxi"));
+    //是否没数据时显示loading气泡动画
+    myChart.showLoading();
+    myChart.hideLoading();
+    option = {
+        // backgroundColor: "white", 背景颜色
+        title: {                      // 图表标题
+            text: '医疗知识图谱',     // 标题文本
+            textStyle: {
+                color: "black",    //标题颜色
+                fontWeight: "lighter",  //标题字体粗细
+                x: "center",
+                fontSize: 15
+            }
+        },
+        animationDurationUpdate: 1500,   // 数据更新动画的时长。[ default: 300 ]
+        animationEasingUpdate: 'quinticInOut',   //
+        legend: {
+            x: "center",
+            show: true,
+            data: ["疾病", "别名", "症状", "部位", "科室", "并发症", "药品"]
+        },
+        series: [
+            {
+                //对 data中 所有数据都生效
+                type: 'graph',    // 系列类型:关系图
+                layout: 'force',  //采用力引导布局，默认为None
+                symbolSize: 50,   //图形的大小
+                edgeSymbol: ['circle', 'arrow'],
+                edgeSymbolSize: [4, 4],
+                edgeLabel: {      // 连接两个关系对象的线上的标签
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 10
+                        },
+                        formatter: "{c}"   // 标签内容
+                    }
+                },
+                force: {
+                    repulsion: 2500,
+                    edgeLength: [10, 100]
+                },
+                focusNodeAdjacency: true,    // 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。[ default: false ]
+                draggable: true,    // 节点是否可拖拽，只在使用力引导布局的时候有用。
+                roam: true,     // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移，可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+                categories: [{   // 节点分类的类目，可选。如果节点有分类的话可以通过 data[i].category 指定每个节点的类目，类目的样式会被应用到节点样式上。图例也可以基于categories名字展现和筛选。
+                    name: '疾病',    // 类目名称，用于和 legend 对应以及格式化 tooltip 的内容。
+                    // itemStyle: {
+                    //     normal: {
+                    //         color: "#009800",
+                    //     }
+                    // }
+                }, {
+                    name: '别名',
+                    // itemStyle: {
+                    //     normal: {
+                    //         color: "#4592FF",
+                    //     }
+                    // }
+                }, {
+                    name: '症状',
+                    // itemStyle: {
+                    //     normal: {
+                    //         color: "#3592F",
+                    //     }
+                    // }
+                },
+                    {
+                        name: '部位',
+                    }, {
+                        name: '科室',
+                    }, {
+                        name: '并发症',
+                    },
+                    {
+                        name: '药品',
+                    }
+                ],
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 10
+                        },
+                    }
+                },
+                force: {
+                    repulsion: 1000
+                },
+                tooltip: {
+                    formatter: function (node) { // 区分连线和节点，节点上额外显示其他数字
+                        if (!node.value) {
+                            return node.data.name;
+                        } else {
+                            return node.data.name + ":" + node.data.showNum;
+                        }
+                    },
+                },
+                lineStyle: {
+                    normal: {
+                        opacity: 0.9,
+                        width: 1,
+                        curveness: 0.3
+                    }
+                },
+                // progressiveThreshold: 700,
+                nodes: [],
+                links: [],
+
+
+            }
+        ]
+    };
+
+    /*
+    myChart.on('click', function (params) {
+            var province = params.name;
+            $.getJSON('/get_profile', {
+            character_name: province,
+
+        }, function (json) {
+            $("#profile").html(json[0]);
+            $("#picture").css("display", "block");
+            $("#picture").attr("src", "data:image/jpg;base64," + json[1]);
+
+
+        });
+        });
+    */
+    /*
+    $('textarea').each(function () {
+        this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+    }).on('input', function () {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+    */
+
+    function search() {
+        $.getJSON('/KGQA_answer_text', {name: $("#search").val()}, function (json) {
+            // alert(json)
+            document.getElementById("answer").value = json
+        });
+
+
+        $.getJSON('/KGQA_answer_graph', {name: $("#search").val()}, function (json) {
+            //alert(json)
+            option.series[0].nodes = json.data.map(function (node, idx) {
+                node.id = idx;
+                return node;
+            });
+            option.series[0].links = json.links;
+            myChart.setOption(option, true);  // 使用刚指定的配置项和数据显示图表。
+        });
+    }
+</script>
+
+</body>
+</html>
